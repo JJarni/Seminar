@@ -34,7 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-int status = 0;
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -92,6 +92,7 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   //int status = 0;
+  int status = 0;
   uint8_t msgt = 0x0, msgr = 0x0;
   /* USER CODE END 2 */
 
