@@ -107,7 +107,6 @@ int main(void)
 	  		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 0);	//gasenje svega osim zutog
 	  		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5, 0);	//^
 			  HAL_Delay(3000);
-
 	  		  break;
 
 	  	  case 1:	//Zeleno za aute
