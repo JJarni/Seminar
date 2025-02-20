@@ -110,11 +110,15 @@ int main(void)
 	  		  break;
 
 	  	  case 1:	//Zeleno za aute
-	  		  HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_1);
-	  		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 1);	//zeleno za aute
-	  		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 1);	//crveno za pješake
-	  		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1|GPIO_PIN_4, 0);
-	  		  break;
+	  		  if(msgt!=0x0){
+	  	  		  __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 3000);
+	  			  HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_1);
+	  			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 1);	//zeleno za aute
+	  			  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 1);	//crveno za pješake
+	  			  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1|GPIO_PIN_4, 0);
+
+	  		  }
+	  			  break;
 
 	  	  case 2:	//Zeleno za pjesake
 	  		  HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_1);
@@ -124,6 +128,7 @@ int main(void)
 			  HAL_Delay(3000);
 			  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);		//gasi crveno za pjesake
 	  		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1|GPIO_PIN_4, 1);	//zeleno pjesaci i crveno auti
+	  		  HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_1);
 	  		  HAL_Delay(20000);		//20s za prijelaz pjesaka
 	 		  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
 	 		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);	//gasimo zeleno pjesake
@@ -137,11 +142,13 @@ int main(void)
 	  		  break;
 	  	  }
 	  	  msgt = 0x0;
-	  	  msgr = 0x0;
-	  	  HAL_UART_Receive(&huart4, &msgr, sizeof(msgr), 100);	//primanje podatka
+	  	  msgr = 0x4;
+	  	  HAL_UART_Receive(&huart4, &msgr, sizeof(msgr), 1000);	//primanje podatka
+	  	  HAL_Delay(20);
+
 	  	  if(msgr != 0x0){
-	  		 msgt = ~msgr;
-	  		 HAL_UART_Transmit(&huart4, &msgt, sizeof(msgt), 10);	//slanje odgovora
+	  		 msgt = msgr;
+	  		 HAL_UART_Transmit(&huart4, &msgt, sizeof(msgt), 100);	//slanje odgovora
 	  		 status = 1;
 	  	  }else{
 	  		 status = 0;

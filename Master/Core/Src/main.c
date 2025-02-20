@@ -106,12 +106,14 @@ int main(void)
 	  switch(status) {
 	  	  case 0:	//Slucaj greske, titrajuce zuto
 	  		  if(i==0){		//uvjet da se ne vrti case 0 u krug
-	  			  __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 1500);
+
+	  		  __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 1500);
 	  			  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
 	  			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 0);	//gasenje svega osim zutog
 	  			  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5, 0);	//^
 	  			  __HAL_TIM_SET_COUNTER(&htim6, 0);		//timer reset, 18s do sljedeceg ponvaljanja case 0
 	  			  i++;
+	  			HAL_Delay(3000);
 	  		  }
 
 			  break;
@@ -125,9 +127,10 @@ int main(void)
 
 		  case 2:	//Zeleno za pjesake
 			  msgt = 0x6;
-			  HAL_UART_Transmit(&huart4, &msgt, sizeof(msgt), 10);
-			  HAL_UART_Receive(&huart4, &msgr, sizeof(msgr), 10);
-			  if(msgr == ~msgt){
+			  HAL_UART_Transmit(&huart4, &msgt, sizeof(msgt), 100);
+			  HAL_Delay(20);
+			  HAL_UART_Receive(&huart4, &msgr, sizeof(msgr), 1000);
+			  if(msgr == msgt){
 				  msgt = 0x0;
 				  HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_1);
 				  __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 3000);
@@ -136,6 +139,7 @@ int main(void)
 				  HAL_Delay(3000);
 				  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);		//gasi crveno za pjesake
 				  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1|GPIO_PIN_4, 1);	//zeleno pjesaci i crveno auti
+				  HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_1);
 				  HAL_Delay(20000);		//20s za prijelaz pjesaka
 				  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
 				  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);	//gasimo zeleno pjesake
@@ -154,20 +158,21 @@ int main(void)
 	  }
 	  msgt = 0x1;
 	  msgr = 0x0;
-	  HAL_UART_Transmit(&huart4, &msgt, sizeof(msgt), 10);	//provjera komunikcaije
-	  HAL_UART_Receive(&huart4, &msgr, sizeof(msgr), 10);
-	  HAL_Delay(20);
+	  HAL_UART_Transmit(&huart4, &msgt, sizeof(msgt), 1000);	//provjera komunikcaije
+	  //HAL_Delay(20);
+	  HAL_UART_Receive(&huart4, &msgr, sizeof(msgr), 100);
+	 // HAL_Delay(20);
 	  if(status != 2){
-		  if(msgr == ~msgt){
+		  if(msgr == msgt){
 			  status = 1;
 		  }else{
 			  status = 0;
 			  HAL_TIM_Base_Start(&htim6);
 			  msgt = 0x0;
-			  HAL_UART_Transmit(&huart4, &msgt, sizeof(msgt), 10);
+			  HAL_UART_Transmit(&huart4, &msgt, sizeof(msgt), 100);
 		  }
 	  }
-	  if(__HAL_TIM_GetCounter(&htim6) >= 18000){
+	  if(__HAL_TIM_GetCounter(&htim6) >= 9000){
 		  i=0;
 	  }
 
